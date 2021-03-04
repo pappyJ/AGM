@@ -1,0 +1,16 @@
+extends baseEmail
+
+block content
+    p Hi JLN Admin,
+        p This Is A Message From #{name} 🎉🙏
+        p #{keyMessage}
+        table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+            tbody
+                tr
+                    td(align='left')
+                        table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+                            tbody
+                                tr
+                                    td
+                                        a(href=`https://jln-builders.com`, target='_blank') Return To Site
+        p - JLN BUILDERS
