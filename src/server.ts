@@ -7,6 +7,10 @@ import mongoose from 'mongoose';
 
 import dotenv from 'dotenv';
 
+dotenv.config({ path: './src/libraries/config/config.env' });
+
+import CONFIG from './libraries/config';
+
 interface customLogger extends Logger {
     exception: (name: Error) => Logger;
 
@@ -15,15 +19,11 @@ interface customLogger extends Logger {
 
 declare let _logger: customLogger;
 
-declare let _include: Function;
-
-dotenv.config({ path: './src/libraries/config/config.env' });
+// end of requiring core  and 3rd party modules
 
 const {
-    config: { database, env },
-} = _include('libraries/config');
-
-// end of requiring core  and 3rd party modules
+    config: { ENV, database },
+} = CONFIG;
 
 // starting express server and connecting to database
 process.on('uncaughtException', (err) => {
@@ -52,14 +52,14 @@ const DB_PROD = process.env
     .DATABASE!.replace('<dbname>', process.env.DB_NAME!)
     .replace('<password>', process.env.DB_PASSWORD!);
 
-const PORT = env.PORT;
+const PORT = ENV.PORT;
 
 const DB_DEV = database.LOCAL;
 
 const DATABASE = process.env.NODE_ENV === 'development' ? DB_DEV : DB_PROD;
 
 mongoose
-    .connect(DATABASE, {
+    .connect(DATABASE!, {
         useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true,

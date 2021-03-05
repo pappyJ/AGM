@@ -1,9 +1,13 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 
-const { catchAsync, AppError } = _include('libraries/error');
+import ErroHandler from '../../libraries/error';
 
-const { MSG, STATUS } = require('../../libraries/shared/constants');
+import CONSTANTS from '../../libraries/shared/constants';
+
+const { catchAsync, AppError } = ErroHandler;
+
+const { STATUS } = CONSTANTS;
 
 // end requiring the modules
 class Authentication {
@@ -248,4 +252,4 @@ class Authentication {
     };
 }
 
-module.exports = Authentication;
+export default Authentication;

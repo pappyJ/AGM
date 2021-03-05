@@ -1,34 +1,36 @@
-// importing the modules
-// const passport = require('passport');
-// importing the modules
+import { Router } from 'express';
 
-const express = require('express');
+import Controller from './controller';
 
-const blogCntrl = require('./controller');
+import VALIDATION from '../../libraries/validations';
 
-const { reqValidate } = _include('libraries/validations');
+import AUTHORIZATION from '../admin';
 
-const { Controller: adminAuth } = _include('components/admin');
+const { getAllBlogs, getBlog, createBlog, updateBlog, deleteBlog } = Controller;
 
-const router = express.Router();
+const { reqValidate } = VALIDATION;
 
-router.get('/', blogCntrl.getAllBlogs);
+const { Controller: adminAuth } = AUTHORIZATION;
 
-router.get('/:slug', blogCntrl.getBlog);
+const router = Router();
+
+router.get('/', getAllBlogs);
+
+router.get('/:slug', getBlog);
 
 // NEEDS AUTHORIZATION
 router.use(adminAuth.activeSession);
 
-router.post('/', reqValidate('createBlog'), blogCntrl.createBlog);
+router.post('/', reqValidate('createBlog'), createBlog);
 
 router
 
     .route('/:slug/details')
 
-    .get(reqValidate('getBlog'), blogCntrl.getBlog)
+    .get(reqValidate('getBlog'), getBlog)
 
-    .patch(reqValidate('updateBlog'), blogCntrl.updateBlog)
+    .patch(reqValidate('updateBlog'), updateBlog)
 
-    .delete(reqValidate('deleteBlog'), blogCntrl.deleteBlog);
+    .delete(reqValidate('deleteBlog'), deleteBlog);
 
-module.exports = router;
+export default router;

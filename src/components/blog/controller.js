@@ -1,13 +1,15 @@
 // NODE MODULES
 
 // BLOG MODULES
-const BlogService = require('./service');
+import BlogService from './service';
 
-const { AppError, catchAsync } = _include('libraries/error');
+import ErroHandler from '../../libraries/error';
 
-const { STATUS, MSG, MISSING_DOCUMENT, INVALID_ID } = _include(
-    'libraries/shared/constants'
-);
+import CONSTANT from '../../libraries/shared/constants';
+
+const { AppError, catchAsync } = ErroHandler;
+
+const { STATUS, MSG } = CONSTANT;
 
 // end of requiring the modules
 /**
@@ -197,4 +199,4 @@ class BlogController {
 
 const blogCntrl = new BlogController();
 
-module.exports = blogCntrl;
+export default blogCntrl;

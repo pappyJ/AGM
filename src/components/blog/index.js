@@ -1,7 +1,14 @@
-exports.Blog = require('./Model');
+import Blog from './Model';
 
-exports.Router = require('./routes');
+import Router from './routes';
 
-exports.Controller = require('./controller');
+import Controller from './controller';
 
-exports.Service = require('./service');
+import Service from './service';
+
+export default {
+    Blog,
+    Router,
+    Controller,
+    Service,
+};

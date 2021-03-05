@@ -1,14 +1,14 @@
-import Admin from './Model';
+import User from './Model';
+
+import Router from './routes';
 
 import Controller from './controller';
 
 import Service from './service';
 
-import Router from './routes';
-
 export default {
-    Admin,
-    Controller,
+    User,
     Service,
+    Controller,
     Router,
 };

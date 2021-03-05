@@ -2,66 +2,74 @@
 // const passport = require('passport');
 // importing the modules
 
-const express = require('express');
+import { Router } from 'express';
 
-const userCntrl = require('./controller');
+import Controller from './controller';
 
-const { reqValidate } = _include('libraries/validations');
+const {
+    getAllUsers,
+    signUp,
+    verifyMe,
+    logIn,
+    sendResetPasswordToken,
+    verifyResetPasswordToken,
+    resetPassword,
+    logOut,
+    getUser,
+    updateUser,
+    changePassword,
+} = Controller;
+
+import VALIDATION from '../../libraries/validations';
+const { reqValidate } = VALIDATION;
 
 // const userCntrl = new UserController();
 
-const router = express.Router();
+const router = Router();
 
-router.get('/', userCntrl.getAllUsers);
+router.get('/', getAllUsers);
 
-router.post('/signup', reqValidate('createUser'), userCntrl.signUp);
+router.post('/signup', reqValidate('createUser'), signUp);
 
-router.post('/verify_me', reqValidate('verifyUser'), userCntrl.verifyMe);
+router.post('/verify_me', reqValidate('verifyUser'), verifyMe);
 
-router.post('/login', reqValidate('loginUser'), userCntrl.logIn);
+router.post('/login', reqValidate('loginUser'), logIn);
 
 router.post(
     '/send_reset_password_token',
     reqValidate('sendResetPasswordTokenUser'),
-    userCntrl.sendResetPasswordToken
+    sendResetPasswordToken
 );
 
 router.post(
     '/verify_reset_password_token',
     reqValidate('verifyResetPasswordTokenUser'),
-    userCntrl.verifyResetPasswordToken
+    verifyResetPasswordToken
 );
 
-router.post(
-    '/reset_password',
-    reqValidate('resetPasswordUser'),
-    userCntrl.resetPassword
-);
+router.post('/reset_password', reqValidate('resetPasswordUser'), resetPassword);
 
-router.post('/logout', userCntrl.logOut);
+router.post('/logout', logOut);
 
 // NEEDS AUTHORIZATION
 // router.use(userCntrl.activeSession);
 
-router
-    .route('/me')
-    .get(userCntrl.getUser)
-    .patch(reqValidate('updateUser'), userCntrl.updateUser);
+router.route('/me').get(getUser).patch(reqValidate('updateUser'), updateUser);
 
 router.post(
     '/change_password',
     reqValidate('changePasswordUser'),
-    userCntrl.changePassword
+    changePassword
 );
 
 router
 
     .route('/:slug')
 
-    .get(reqValidate('getUser'), userCntrl.getUser)
+    .get(reqValidate('getUser'), getUser)
 
-    .patch(reqValidate('updateUser'), userCntrl.updateUser);
+    .patch(reqValidate('updateUser'), updateUser);
 
 // .delete(deleteUser);
 
-module.exports = router;
+export default router;

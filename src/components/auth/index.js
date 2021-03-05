@@ -1,7 +1,7 @@
-const authHelpers = require('./helpers');
-const Authentication = require('./auth');
+import authHelpers from './helpers';
+import Authentication from './auth';
 
-module.exports = {
+export default {
     authHelpers,
-    Authentication
-}
+    Authentication,
+};

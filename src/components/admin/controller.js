@@ -1,15 +1,17 @@
 // USER MODULES
-const AdminService = require('./service');
+import AdminService from './service';
 
-const { Service: UserService } = _include('components/users');
+import UserService from '../users/service';
 
-const { Authentication } = _include('components/auth');
+import Authentication from '../auth/auth';
 
-const { AppError, catchAsync } = _include('libraries/error');
+import ErroHandler from '../../libraries/error';
 
-const { STATUS, MSG, MISSING_DOCUMENT, INVALID_ID } = _include(
-    'libraries/shared/constants'
-);
+import CONSTANTS from '../../libraries/shared/constants';
+
+const { AppError, catchAsync } = ErroHandler;
+
+const { STATUS, MSG } = CONSTANTS;
 
 // end of requiring the modules
 /**
@@ -139,4 +141,4 @@ adminCntrl.logIn = authCntrl.logIn;
 adminCntrl.logOut = authCntrl.logOut;
 adminCntrl.activeSession = authCntrl.activeSession;
 
-module.exports = adminCntrl;
+export default adminCntrl;

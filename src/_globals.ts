@@ -1,4 +1,3 @@
-import { Logger } from 'winston';
 import logger from './logger';
 
 const base_dir = __dirname;
@@ -7,10 +6,9 @@ const abs_path = function (path: string) {
     return base_dir + path;
 };
 
-let _logger: Logger;
-let _include: Function;
+const _logger = logger;
 
-_include = function (file: string) {
+const _include = function (file: string) {
     // console.log(file);
     const main = '/';
     const lib = 'libraries/';

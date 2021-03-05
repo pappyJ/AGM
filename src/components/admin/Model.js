@@ -1,10 +1,10 @@
 // importing the modules
 
-const { Schema, model: Model } = require('mongoose');
+import { Schema, model as Model } from 'mongoose';
 
-const { isEmail } = require('validator');
+import { isEmail } from 'validator';
 
-const bcrypt = require('bcrypt');
+import { hash, compare } from 'bcrypt';
 
 const adminSchema = new Schema(
     {
@@ -54,7 +54,7 @@ adminSchema.index({ slug: 1 });
 // initiating the pre and post hooks
 
 adminSchema.pre('save', async function (next) {
-    this.password = await bcrypt.hash(this.password, 12);
+    this.password = await hash(this.password, 12);
 
     next();
 });
@@ -72,9 +72,9 @@ adminSchema.statics.registerAsAdmin = async function (email) {
 
 // ADMIN METHODS
 adminSchema.methods.validPassword = async function (password) {
-    return await bcrypt.compare(password, this.password);
+    return await compare(password, this.password);
 };
 
 const Admin = Model('Admin', adminSchema);
 
-module.exports = Admin;
+export default Admin;

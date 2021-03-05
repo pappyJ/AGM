@@ -1,10 +1,10 @@
 // NODE MODULES
 
 // USER MODULES
-const AdminModel = require('./Model');
-const { ApiFeatures } = _include('libraries/shared/utils');
+const AdminModel = require('./Model').default;
+import ApiFeatures from '../../libraries/shared/utils/ApiFeatures';
 const compEmitter = _include('libraries/suscribers');
-const { STATUS, MSG } = _include('libraries/shared/constants');
+const { STATUS } = _include('libraries/shared/constants');
 
 // end requiring the modules
 

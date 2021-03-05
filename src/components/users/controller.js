@@ -1,18 +1,17 @@
 // NODE MODULES
 
 // USER MODULES
-const UserService = require('./service');
+import UserService from './service';
 
-const {
-    authHelpers: { signToken },
-    Authentication,
-} = _include('components/auth');
+import ErroHandler from '../../libraries/error';
 
-const { AppError, catchAsync } = _include('libraries/error');
+import CONSTANTS from '../../libraries/shared/constants';
 
-const { STATUS, MSG, MISSING_DOCUMENT, INVALID_ID } = _include(
-    'libraries/shared/constants'
-);
+import Authentication from '../auth/auth';
+
+const { AppError, catchAsync } = ErroHandler;
+
+const { STATUS, MSG } = CONSTANTS;
 
 // end of requiring the modules
 /**
@@ -207,4 +206,4 @@ class UserController extends Authentication {
 
 const userCntrl = new UserController();
 
-module.exports = userCntrl;
+export default userCntrl;

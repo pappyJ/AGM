@@ -1,12 +1,14 @@
 // importing the modules
 
-const express = require('express');
+import { Router } from 'express';
 
-const adminCntrl = require('./controller');
+import adminCntrl from './controller';
 
-const { reqValidate } = _include('libraries/validations');
+import VALIDATION from '../../libraries/validations';
 
-const router = express.Router();
+const { reqValidate } = VALIDATION;
+
+const router = Router();
 
 router.post('/signup', reqValidate('createAdmin'), adminCntrl.createAdmin);
 
@@ -20,4 +22,4 @@ router.get('/', adminCntrl.getAllAdmins);
 
 router.get('/:email', reqValidate('getAdmin'), adminCntrl.getAdmin);
 
-module.exports = router;
+export default router;
