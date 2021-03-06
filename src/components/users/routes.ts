@@ -21,7 +21,8 @@ const {
 } = Controller;
 
 import VALIDATION from '../../libraries/validations';
-const { reqValidate } = VALIDATION;
+
+const { reqValidate }: { reqValidate: (validator: string) => any } = VALIDATION;
 
 // const userCntrl = new UserController();
 

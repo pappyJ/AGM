@@ -1,10 +1,10 @@
 // importing the modules
 
-import { Schema, model as Model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 import slugify from 'slugify';
 
-import { isEmail } from 'validator';
+import validator from 'validator';
 
 import { hash, compare } from 'bcrypt';
 
@@ -14,7 +14,16 @@ import HELPERS from '../../libraries/shared/helpers';
 
 const { states } = HELPERS;
 
-const userSchema = new Schema(
+interface UserDocument extends Document {
+    firstName: string;
+    lastName: string;
+    password: string;
+    userNo: number;
+    slug: string;
+    passwordConfirm: string | undefined;
+}
+
+const userSchema: Schema<UserDocument> = new Schema(
     {
         firstName: {
             type: String,
@@ -39,7 +48,10 @@ const userSchema = new Schema(
         email: {
             type: String,
             required: true,
-            validate: [isEmail, 'User Must Have A alid Email Address!'],
+            validate: [
+                validator.isEmail,
+                'User Must Have A alid Email Address!',
+            ],
             unique: [true, 'Email Address already exists!'],
             lowercase: true,
         },
@@ -55,12 +67,6 @@ const userSchema = new Schema(
             type: String,
             required: true,
             trim: true,
-            validate: {
-                validator: function (value) {
-                    return this.password === value;
-                },
-                message: 'Passwords Do Not Match. Try Again!',
-            },
         },
 
         dob: {
@@ -135,6 +141,13 @@ const userSchema = new Schema(
     }
 );
 
+//validations
+userSchema.obj.passwordConfirm.validate = {
+    validator: function (value: string): boolean {
+        return this.password === value;
+    },
+};
+
 // indexing the doc for quick fetch
 
 // userSchema.index({ firstName: 1, lastName: 1 }, { unique: [true, 'User Already Exists'] });
@@ -145,12 +158,11 @@ userSchema.index({ slug: 1 });
 
 // initiating the pre and post hooks
 
-userSchema.pre('save', async function (next) {
+userSchema.pre<UserDocument>('save', async function (next) {
     if (this.isNew) {
         const uniqueId = new ShortUniqueId();
 
-        this.userNo =
-            parseInt(await Model('User').find().estimatedDocumentCount()) + 1;
+        this.userNo = +model('User').find().estimatedDocumentCount() + 1;
 
         const slug = `${this.firstName}-${this.lastName}-${
             this.userNo
@@ -165,7 +177,7 @@ userSchema.pre('save', async function (next) {
 
     next();
 });
-userSchema.pre('save', async function (next) {
+userSchema.pre<UserDocument>('save', async function (next) {
     if (!this.isModified('password') || this.isNew) return next();
 
     this.password = await hash(this.password, 12);
@@ -176,19 +188,19 @@ userSchema.pre('save', async function (next) {
 });
 
 // USER STATICS
-userSchema.statics.findByEmail = async function (email) {
+userSchema.statics.findByEmail = async function (email: string) {
     return await this.findOne({ email });
 };
 
-userSchema.statics.findBySlug = async function (slug) {
+userSchema.statics.findBySlug = async function (slug: string) {
     return await this.findOne({ slug });
 };
 
 // USER METHODS
-userSchema.methods.validPassword = async function (password) {
+userSchema.methods.validPassword = async function (password: string) {
     return await compare(password, this.password);
 };
 
-const User = Model('User', userSchema);
+const User = model('User', userSchema);
 
 export default User;
