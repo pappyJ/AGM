@@ -110,7 +110,7 @@ class AdminService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async get(query: object, populateOptions = undefined) {
+    async get(query: string, populateOptions = undefined) {
         let adminQuery = this.AdminModel.findByEmail(query);
 
         // TODO: Populate populateOptions
