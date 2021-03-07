@@ -1,12 +1,16 @@
 // importing the modules
 
-import { Schema, model as Model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
-import { isEmail } from 'validator';
+import validator from 'validator';
 
 import { hash, compare } from 'bcrypt';
 
-const adminSchema = new Schema(
+interface AdminDocument extends Document {
+    password: string;
+}
+
+const adminSchema: Schema<AdminDocument> = new Schema(
     {
         name: {
             type: String,
@@ -18,7 +22,10 @@ const adminSchema = new Schema(
         email: {
             type: String,
             required: true,
-            validate: [isEmail, 'Admin Must Have A alid Email Address!'],
+            validate: [
+                validator.isEmail,
+                'Admin Must Have A alid Email Address!',
+            ],
             unique: [true, 'Email Address already exists!'],
             lowercase: true,
         },
@@ -60,12 +67,12 @@ adminSchema.pre('save', async function (next) {
 });
 
 // ADMIN STATICS
-adminSchema.statics.findByEmail = async function (email) {
+adminSchema.statics.findByEmail = async function (email: string) {
     return await this.findOne({ email });
 };
 
-adminSchema.statics.registerAsAdmin = async function (email) {
-    const maxAdmin = parseInt(await this.find().estimatedDocumentCount());
+adminSchema.statics.registerAsAdmin = async function () {
+    const maxAdmin = await this.find().estimatedDocumentCount();
 
     return maxAdmin < 4 ? true : false;
 };
@@ -75,6 +82,6 @@ adminSchema.methods.validPassword = async function (password) {
     return await compare(password, this.password);
 };
 
-const Admin = Model('Admin', adminSchema);
+const Admin = model('Admin', adminSchema);
 
 export default Admin;

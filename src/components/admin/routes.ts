@@ -6,7 +6,7 @@ import adminCntrl from './controller';
 
 import VALIDATION from '../../libraries/validations';
 
-const { reqValidate } = VALIDATION;
+const { reqValidate }: { reqValidate: (validator: string) => any } = VALIDATION;
 
 const router = Router();
 

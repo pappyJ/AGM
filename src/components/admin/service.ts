@@ -1,14 +1,18 @@
 // NODE MODULES
 
 // USER MODULES
-const AdminModel = require('./Model').default;
+import AdminModel from './Model.js';
 import ApiFeatures from '../../libraries/shared/utils/ApiFeatures';
-const compEmitter = _include('libraries/suscribers');
-const { STATUS } = _include('libraries/shared/constants');
+import compEmitter from '../../libraries/suscribers';
+import CONSTANTS from '../../libraries/shared/constants';
+
+const { STATUS } = CONSTANTS;
 
 // end requiring the modules
 
 class AdminService extends ApiFeatures {
+    AdminModel: any;
+    eventEmitter: any;
     /**
      * Creates admin controller
      * @param {Object} [adminModel = AdminModel] - Instance of a Mongoose Schema of Announcement Model
@@ -30,7 +34,7 @@ class AdminService extends ApiFeatures {
      * @throws Mongoose Error
      */
 
-    async create(details) {
+    async create(details: object) {
         /**
          * @type {Object} - Holds the created data object.
          */
@@ -56,7 +60,7 @@ class AdminService extends ApiFeatures {
         };
     }
 
-    async getAll(query) {
+    async getAll(query: any) {
         const adminsQuery = this.api(this.AdminModel, query)
             .filter()
             .sort()
@@ -80,7 +84,7 @@ class AdminService extends ApiFeatures {
      * @throws Mongoose Error
      */
 
-    async logIn({ email, password }) {
+    async logIn({ email, password }: { [unit: string]: string }) {
         const admin = await this.AdminModel.findByEmail(email);
 
         if (!admin || !(await admin.validPassword(password))) {
@@ -106,7 +110,7 @@ class AdminService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async get(query, populateOptions = undefined) {
+    async get(query: object, populateOptions = undefined) {
         let adminQuery = this.AdminModel.findByEmail(query);
 
         // TODO: Populate populateOptions
@@ -133,4 +137,4 @@ class AdminService extends ApiFeatures {
     }
 }
 
-module.exports = AdminService;
+export default AdminService;
