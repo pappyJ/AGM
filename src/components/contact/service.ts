@@ -1,11 +1,13 @@
 // NODE MODULES
 
 // BUSINESS MODULES
-const ContactModel = require('./Model');
-const { ApiFeatures } = _include('libraries/shared/utils');
-const compEmitter = _include('libraries/suscribers');
-const { STATUS } = _include('libraries/shared/constants');
-const { Email } = require('../../libraries/shared/utils');
+import ContactModel from './Model';
+import ApiFeatures from '../../libraries/shared/utils/ApiFeatures';
+import compEmitter from '../../libraries/suscribers';
+import CONSTANTS from '../../libraries/shared/constants';
+import Email from '../../libraries/shared/utils/Email';
+
+const { STATUS } = CONSTANTS;
 
 // end requiring the modules
 
@@ -16,6 +18,9 @@ class ContactService extends ApiFeatures {
      * @param {Object} [eventEmitter = compEmitter] - Instance of an Emitter that suscribes to a database operation
      *
      */
+
+    ContactModel: any;
+    eventEmitter: any;
 
     constructor(contactModel = ContactModel, eventEmitter = compEmitter) {
         super();
@@ -31,7 +36,7 @@ class ContactService extends ApiFeatures {
      * @throws Mongoose Error
      */
 
-    async create(details) {
+    async create(details: object) {
         /**
          * @type {Object} - Holds the created data object.
          */
@@ -54,7 +59,7 @@ class ContactService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async get(query, populateOptions = undefined) {
+    async get(query: object, populateOptions = undefined) {
         let contactQuery = this.ContactModel.findOne({ ...query });
 
         // TODO: Populate populateOptions
@@ -87,7 +92,7 @@ class ContactService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async getAll(query) {
+    async getAll(query: any) {
         let contactsQuery = this.api(this.ContactModel, query)
             .filter()
             .sort()
@@ -120,7 +125,7 @@ class ContactService extends ApiFeatures {
      * @returns {} Returns null
      * @throws Mongoose Error
      */
-    async delete(query) {
+    async delete(query: object) {
         const contact = await this.ContactModel.findOneAndDelete({ ...query });
 
         this.eventEmitter.emitEvent('Deleted Contact', contact);
@@ -139,7 +144,7 @@ class ContactService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async update(query, details) {
+    async update(query: object, details: any) {
         //verify document's availability
 
         const findContact = await this.ContactModel.findOne(query);
@@ -265,7 +270,7 @@ class ContactService extends ApiFeatures {
             keyMessage: 'message to be sent',
         },
  */
-    async executeMail(query) {
+    async executeMail(query: { [unit: string]: string }) {
         const Mail = new Email(query);
 
         const subject = `Feedback Mail From ${query.name} Email: <${query.email}>`;
@@ -285,4 +290,4 @@ class ContactService extends ApiFeatures {
     }
 }
 
-module.exports = ContactService;
+export default ContactService;

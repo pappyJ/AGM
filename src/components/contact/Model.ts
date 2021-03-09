@@ -1,8 +1,8 @@
 // importing the modules
 
-const { Schema, model: Model } = require('mongoose');
+import { Schema, model, Document } from 'mongoose';
 
-const slugify = require('slugify');
+import slugify from 'slugify';
 
 const stringConfig = {
     trim: true,
@@ -10,7 +10,12 @@ const stringConfig = {
     type: String,
 };
 
-const contactSchema = new Schema(
+interface UserDocument extends Document {
+    name: string;
+    slug: string;
+}
+
+const contactSchema: Schema<UserDocument> = new Schema(
     {
         name: stringConfig,
 
@@ -102,6 +107,6 @@ contactSchema.statics.findByName = async function (name) {
 contactSchema.statics.totalContactsCount = async function () {
     return await this.estimatedDocumentCount();
 };
-const Contact = Model('Contact', contactSchema);
+const Contact = model('Contact', contactSchema);
 
-module.exports = Contact;
+export default Contact;

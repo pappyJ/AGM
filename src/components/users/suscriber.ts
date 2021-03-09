@@ -4,13 +4,7 @@
  */
 import { Logger } from 'winston';
 
-interface customLogger extends Logger {
-    exception: (name: Error) => Logger;
-
-    rejection: (name: Error) => Logger;
-}
-
-declare let _logger: customLogger;
+declare let _logger: Logger;
 
 const userEvents = (eventEmitter: any) => {
     eventEmitter.on('New User', (user: object) => {

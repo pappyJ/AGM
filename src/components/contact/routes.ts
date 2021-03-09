@@ -1,10 +1,14 @@
-const express = require('express');
+import express from 'express';
 
-const contactCntrl = require('./controller');
+import contactCntrl from './controller';
 
-const { reqValidate } = _include('libraries/validations');
+import VALIDATION from '../../libraries/validations';
 
-const { Controller: adminAuth } = _include('components/admin');
+import AUTHORIZATION from '../admin';
+
+const { Controller: adminAuth } = AUTHORIZATION;
+
+const { reqValidate }: { reqValidate: (validator: string) => any } = VALIDATION;
 
 const router = express.Router();
 
@@ -34,4 +38,4 @@ router
 
     .delete(reqValidate('deleteContact'), contactCntrl.deleteContact);
 
-module.exports = router;
+export default router;

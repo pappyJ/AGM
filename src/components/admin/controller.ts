@@ -126,7 +126,7 @@ class AdminController {
     );
 
     getAllAdmins: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
+        async (req: Request, res: Response) => {
             /**
              * @type {Object} - An Object of fields to be queried.
              *
