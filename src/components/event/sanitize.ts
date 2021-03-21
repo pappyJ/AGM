@@ -1,14 +1,12 @@
-const Joi = require('joi');
-
-const { AppError } = _include('libraries/error');
+import Joi from 'joi';
 
 const defaultStringValidate = Joi.string().lowercase().trim();
 /**
- * @description Joi Schema Validation For Blog Feature
+ * @description Joi Schema Validation For Event Feature
  */
 
 module.exports = {
-    createBlog: {
+    createEvent: {
         params: {},
 
         body: {
@@ -30,7 +28,7 @@ module.exports = {
         },
     },
 
-    getBlog: {
+    getEvent: {
         params: {
             slug: defaultStringValidate.required(),
         },
@@ -38,7 +36,7 @@ module.exports = {
         body: {},
     },
 
-    deleteBlog: {
+    deleteEvent: {
         params: {
             slug: defaultStringValidate.required(),
         },
@@ -46,7 +44,7 @@ module.exports = {
         body: {},
     },
 
-    updateBlog: {
+    updateEvent: {
         params: {
             slug: defaultStringValidate.required(),
         },

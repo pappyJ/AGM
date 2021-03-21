@@ -1,7 +1,5 @@
 const Joi = require('joi');
 
-const { AppError } = _include('libraries/error');
-
 const defaultStringValidate = Joi.string().lowercase().trim();
 /**
  * @description Joi Schema Validation For Gallery Feature

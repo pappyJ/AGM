@@ -6,7 +6,7 @@ declare const _include: Function;
 
 const users = _include('components/users/sanitize');
 const admin = _include('components/admin/sanitize');
-const blog = _include('components/blog/sanitize');
+const event = _include('components/event/sanitize');
 const business = _include('components/business/sanitize');
 const product = _include('components/product/sanitize');
 const gallery = _include('components/gallery/sanitize');
@@ -14,12 +14,11 @@ const layout = _include('components/layout/sanitize');
 const contact = _include('components/contact/sanitize');
 
 const { AppError } = _include('libraries/error');
-// const { selectProps } = _include('libraries/shared/helpers/helper');
 
 const validate = {
     ...users,
     ...admin,
-    ...blog,
+    ...event,
     ...business,
     ...product,
     ...gallery,

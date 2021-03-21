@@ -29,4 +29,4 @@ const contactEvents = (eventEmitter: any) => {
     return eventEmitter;
 };
 
-module.exports = contactEvents;
+export default contactEvents;

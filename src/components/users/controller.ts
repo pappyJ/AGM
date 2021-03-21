@@ -60,7 +60,7 @@ class UserController extends Authentication {
      * @access protected
      */
     createUser: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
+        async (req: Request, res: Response) => {
             /**
              * @type {Object} - An Object of fields required for creating a User.
              */
@@ -91,7 +91,7 @@ class UserController extends Authentication {
      * @route {GET} /user/:slug or :/id
      * @access public
      */
-    getUser = catchAsync(
+    getUser: RequestHandler = catchAsync(
         async (req: CustomRequest, res: Response, next: NextFunction) => {
             /**
              * @type {Object} - An Object of fields to be queried.

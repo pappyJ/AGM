@@ -1,72 +1,76 @@
 // NODE MODULES
 
 // BLOG MODULES
-const BlogModel = require('./Model');
+import EventModel from './Model';
 import ApiFeatures from '../../libraries/shared/utils/ApiFeatures';
-const compEmitter = _include('libraries/suscribers');
-const { STATUS, MSG } = _include('libraries/shared/constants');
+import compEmitter from '../../libraries/suscribers';
+import CONSTANTS from '../../libraries/shared/constants';
 
+const { STATUS } = CONSTANTS;
 // end requiring the modules
 
-class BlogService extends ApiFeatures {
+class EventService extends ApiFeatures {
     /**
-     * Creates blog controller
-     * @param {Object} [blogModel = BlogModel] - Instance of a Mongoose Schema of Announcement Model
+     * Creates event controller
+     * @param {Object} [eventModel = EventModel] - Instance of a Mongoose Schema of Announcement Model
      * @param {Object} [eventEmitter = compEmitter] - Instance of an Emitter that suscribes to a database operation
      *
      */
 
-    constructor(blogModel = BlogModel, eventEmitter = compEmitter) {
+    EventModel: any;
+    eventEmitter: any;
+
+    constructor(eventModel = EventModel, eventEmitter = compEmitter) {
         super();
-        this.BlogModel = blogModel;
+        this.EventModel = eventModel;
         this.eventEmitter = eventEmitter;
     }
 
     /**
-     * Creates an Blog.
+     * Creates an Event.
      * @async
-     * @param {Object} details - Details required to create a Blog.
-     * @returns {Object} Returns the created Blog
+     * @param {Object} details - Details required to create a Event.
+     * @returns {Object} Returns the created Event
      * @throws Mongoose Error
      */
 
-    async create(details) {
+    async create(details: object) {
         /**
          * @type {Object} - Holds the created data object.
          */
-        const blog = await this.BlogModel.create({ ...details });
+        const event = await this.EventModel.create({ ...details });
 
         // emits an Event
-        this.eventEmitter.emitEvent('New Blog', blog);
+        this.eventEmitter.emitEvent('New Event', event);
 
         return {
             value: {
-                data: blog,
+                data: event,
             },
         };
     }
 
     /**
-     * Finds one Blog Data by it's id or Slug.
+     * Finds one Event Data by it's id or Slug.
      * @async
      * @param {string} id/slug - unique id or slug of the requested data.
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async get(query, populateOptions = undefined) {
-        let blogQuery = this.BlogModel.findOne({ ...query });
+    async get(query: object, populateOptions = undefined) {
+        let eventQuery = this.EventModel.findOne({ ...query });
 
         // TODO: Populate populateOptions
         if (populateOptions !== undefined)
-            blogQuery = blogQuery.populate(populateOptions);
-        // else blogQuery = blogQuery.lean();
+            eventQuery = eventQuery.populate(populateOptions);
+        // else eventQuery = eventQuery.lean();
 
-        const blog = await blogQuery;
+        const event = await eventQuery;
 
-        if (!blog) {
+        if (!event) {
             return {
                 error: {
-                    msg: 'Invalid Blog. Blog Does Not Exist!',
+                    msg: 'Invalid Event. Event Does Not Exist!',
                     code: STATUS.BAD_REQUEST,
                 },
             };
@@ -74,7 +78,7 @@ class BlogService extends ApiFeatures {
 
         return {
             value: {
-                data: blog,
+                data: event,
             },
         };
     }
@@ -86,47 +90,47 @@ class BlogService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async getAll(query) {
-        let blogsQuery = this.api(this.BlogModel, query)
+    async getAll(query: any) {
+        let eventsQuery = this.api(this.EventModel, query)
             .filter()
             .sort()
             .limitFields();
 
-        const blogsLength = (await blogsQuery.query.lean()).length;
+        const eventsLength = (await eventsQuery.query.lean()).length;
 
-        blogsQuery = blogsQuery.paginate();
+        eventsQuery = eventsQuery.paginate();
 
-        const blogs = await blogsQuery.query.lean();
+        const events = await eventsQuery.query.lean();
 
-        const totalBlogsLength = await this.BlogModel.totalBlogsCount();
+        const totalEventsLength = await this.EventModel.totalEventsCount();
 
         return {
             value: {
                 data: {
-                    totalLength: totalBlogsLength,
-                    queryLength: blogsLength,
-                    paginatedLength: blogs.length,
-                    blogs,
+                    totalLength: totalEventsLength,
+                    queryLength: eventsLength,
+                    paginatedLength: events.length,
+                    events,
                 },
             },
         };
     }
 
     /**
-     * Deletes one Blog Data by it's id or Slug.
+     * Deletes one Event Data by it's id or Slug.
      * @async
      * @param {string} id/slug - unique id or slug of the requested data.
      * @returns {} Returns null
      * @throws Mongoose Error
      */
-    async delete(query) {
-        const blog = await this.BlogModel.findOneAndDelete({ ...query });
+    async delete(query: object) {
+        const event = await this.EventModel.findOneAndDelete({ ...query });
 
-        this.eventEmitter.emitEvent('Deleted Blog', blog);
+        this.eventEmitter.emitEvent('Deleted Event', event);
 
         return {
             value: {
-                data: blog,
+                data: event,
             },
         };
     }
@@ -138,8 +142,8 @@ class BlogService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async update(query, details) {
-        const blog = await this.BlogModel.findOneAndUpdate(
+    async update(query: object, details: object) {
+        const event = await this.EventModel.findOneAndUpdate(
             query,
             { ...details },
             {
@@ -148,23 +152,23 @@ class BlogService extends ApiFeatures {
             }
         );
 
-        if (!blog) {
+        if (!event) {
             return {
                 error: {
-                    msg: 'Invalid Blog. Blog Does Not Exist!',
+                    msg: 'Invalid Event. Event Does Not Exist!',
                     code: STATUS.BAD_REQUEST,
                 },
             };
         }
 
-        this.eventEmitter.emitEvent('Updated Blog', blog);
+        this.eventEmitter.emitEvent('Updated Event', event);
 
         return {
             value: {
-                data: blog,
+                data: event,
             },
         };
     }
 }
 
-module.exports = BlogService;
+export default EventService;
