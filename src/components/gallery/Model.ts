@@ -1,12 +1,30 @@
 // importing the modules
 
-const { Schema, model: Model } = require('mongoose');
+import { Schema, model, Document } from 'mongoose';
 
-const slugify = require('slugify');
+import slugify from 'slugify';
 
-const { default: ShortUniqueId } = require('short-unique-id');
+import { default as ShortUniqueId } from 'short-unique-id';
 
-const gallerySchema = new Schema(
+interface GalleryDocument extends Document {
+    title: string;
+
+    category: string;
+
+    description: string;
+
+    creator: string;
+
+    image: string;
+
+    active: boolean;
+
+    slug: string;
+
+    date: string;
+}
+
+const gallerySchema: Schema<GalleryDocument> = new Schema(
     {
         title: {
             type: String,
@@ -27,6 +45,11 @@ const gallerySchema = new Schema(
             type: String,
             trim: true,
             lowercase: true,
+            enum: {
+                values: ['marriage', 'burial', 'dedication'],
+
+                message: '{VALUE} Is Not A Valid Category!',
+            },
         },
 
         creator: {
@@ -95,6 +118,6 @@ gallerySchema.statics.findByImage = async function (image) {
 gallerySchema.statics.totalGallerysCount = async function () {
     return await this.find().estimatedDocumentCount();
 };
-const Gallery = Model('Gallery', gallerySchema);
+const Gallery = model('Gallery', gallerySchema);
 
-module.exports = Gallery;
+export default Gallery;

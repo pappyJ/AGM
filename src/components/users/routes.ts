@@ -1,6 +1,4 @@
 // importing the modules
-// const passport = require('passport');
-// importing the modules
 
 import { Router } from 'express';
 

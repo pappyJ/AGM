@@ -1,36 +1,52 @@
 // importing the modules
 
-const { Schema, model: Model } = require('mongoose');
+import { Schema, model, Document } from 'mongoose';
 
-const { default: ShortUniqueId } = require('short-unique-id');
+import slugify from 'slugify';
 
-const slugify = require('slugify');
+import { default as ShortUniqueId } from 'short-unique-id';
 
-const blogSchema = new Schema(
+interface EventDocument extends Document {
+    banner: string;
+
+    title: string;
+
+    category: string;
+
+    description: string;
+
+    creator: string;
+
+    image: string;
+
+    link: string;
+
+    slug: string;
+
+    date: string;
+}
+
+const eventSchema: Schema<EventDocument> = new Schema(
     {
         banner: {
             type: String,
-            required: [true, 'Blog Must Have A Banner!'],
+            required: [true, 'Event Must Have A Banner!'],
             trim: true,
             lowercase: true,
         },
 
         title: {
             type: String,
-            required: [true, 'Blog Must Have A Title!'],
+            required: [true, 'Event Must Have A Title!'],
             trim: true,
-            unique: [true, 'Blog Title - "{VALUE}" Already Exists!'],
+            unique: [true, 'Event Title - "{VALUE}" Already Exists!'],
             lowercase: true,
         },
 
         category: {
             type: String,
             enum: {
-                values: [
-                    'agriculture',
-                    'construction',
-                    'manufactures representative',
-                ],
+                values: ['wedding', 'child dedication', 'burial'],
                 message: '{VALUE} Is Not A Valid Category!',
             },
             lowercase: true,
@@ -38,7 +54,7 @@ const blogSchema = new Schema(
 
         description: {
             type: String,
-            required: [true, 'Blog Must Have A Description!'],
+            required: [true, 'Event Must Have A Description!'],
             trim: true,
             lowercase: true,
         },
@@ -46,19 +62,19 @@ const blogSchema = new Schema(
         creator: {
             type: Schema.Types.ObjectId,
             ref: 'Admin',
-            required: [true, 'Blog Creator Is Required'],
+            required: [true, 'Event Creator Is Required'],
         },
 
         image: {
             type: String,
-            required: [true, 'Blog Image Is Required!'],
+            required: [true, 'Event Image Is Required!'],
             trim: true,
             lowercase: true,
         },
 
         link: {
             type: String,
-            required: [true, 'Blog Link Is Required!'],
+            required: [true, 'Event Link Is Required!'],
             trim: true,
             lowercase: true,
         },
@@ -97,15 +113,15 @@ const blogSchema = new Schema(
 
 // indexing the doc for quick fetch
 
-// blogSchema.index({ firstName: 1, lastName: 1 }, { unique: [true, 'Blog Already Exists'] });
+// eventSchema.index({ firstName: 1, lastName: 1 }, { unique: [true, 'Event Already Exists'] });
 
-blogSchema.index({ slug: 1 });
+eventSchema.index({ slug: 1 });
 
-// blogSchema.plugin(mongoose lean module);
+// eventSchema.plugin(mongoose lean module);
 
 // initiating the pre and post hooks
 
-blogSchema.pre('save', async function (next) {
+eventSchema.pre<EventDocument>('save', async function (next) {
     const _id = new ShortUniqueId();
 
     this.slug = slugify(`${this.title} ${_id()}`, { lower: true });
@@ -114,13 +130,13 @@ blogSchema.pre('save', async function (next) {
 });
 
 // BLOG STATICS
-blogSchema.statics.findBySlug = async function (slug) {
+eventSchema.statics.findBySlug = async function (slug) {
     return await this.findOne({ slug });
 };
 
-blogSchema.statics.totalBlogsCount = async function () {
+eventSchema.statics.totalEventsCount = async function () {
     return await this.find().estimatedDocumentCount();
 };
-const Blog = Model('Blog', blogSchema);
+const Event = model('Event', eventSchema);
 
-module.exports = Blog;
+export default Event;

@@ -5,6 +5,8 @@ let eventBucket = compEmitter;
 import userEvents from '../../components/users/suscriber';
 import layoutEvents from '../../components/layout/suscriber';
 import contactEvents from '../../components/contact/suscriber';
+import galleryEvents from '../../components/gallery/suscriber';
+import eventEvents from '../../components/event/suscriber';
 
 const compose = (fn1: Function, ...fns: Function[]) => (emitter: any) =>
     fn1(
@@ -14,6 +16,12 @@ const compose = (fn1: Function, ...fns: Function[]) => (emitter: any) =>
         )
     );
 
-eventBucket = compose(userEvents, layoutEvents, contactEvents)(eventBucket);
+eventBucket = compose(
+    userEvents,
+    layoutEvents,
+    contactEvents,
+    galleryEvents,
+    eventEvents
+)(eventBucket);
 
 export default eventBucket;

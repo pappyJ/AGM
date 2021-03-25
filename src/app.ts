@@ -13,18 +13,30 @@ import ErroHandler from './libraries/error';
 
 const { AppError, errorController: globalErrorHandler } = ErroHandler;
 
-import Blog from './components/blog';
+import HELPERS from './libraries/shared/helpers';
 
-const { Router: blogRouter } = Blog;
-// const { Router: businessRouter } = _include('components/business');
+import Event from './components/event';
+
+import Gallery from './components/gallery';
+
+import Admin from './components/admin';
+
+import Contact from './components/contact';
+
+//routers
+
 // const { Router: productRouter } = _include('components/product');
 // const { Router: layoutRouter } = _include('components/layout');
-// const { Router: contactRouter } = _include('components/contact');
-// const { Router: galleryRouter } = _include('components/gallery');
 
-// const { Router: adminRouter } = _include('components/admin');
+const { Router: eventRouter } = Event;
 
-import HELPERS from './libraries/shared/helpers';
+const { Router: galleryRouter } = Gallery;
+
+const { Router: adminRouter } = Admin;
+
+const { Router: contactRouter } = Contact;
+
+//helpers
 
 const { sessionParams, corsOptions } = HELPERS;
 
@@ -63,7 +75,7 @@ app.options('*', corsSetup);
 
 const SESSION_CREDENTIALS = sessionParams(expressSession);
 
-app.use(expressSession({...SESSION_CREDENTIALS, unset:'destroy'}));
+app.use(expressSession({ ...SESSION_CREDENTIALS, unset: 'destroy' }));
 
 // PASSPORT INIT
 
@@ -110,13 +122,11 @@ app.use(cors(corsOptions));
 
 // app.use('/', limitUser);
 
-// app.use('/view', viewRoutes);
-
 // Would be moved to a seperate module
 
 // Homepage
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
     res.render('index');
 });
 
@@ -125,17 +135,21 @@ app.get('/maintainance', (req, res) => {
     res.status(200).send('<h1>We Are Currently Undergoing Maintance</h1>');
 });
 
-app.get('/api/v1', (req, res) => {
-    res.status(200).send('<h1>Welcome to JLN Api</h1>');
+app.get('/api/v1', (_, res) => {
+    res.status(200).send('<h1>Welcome to AGM Api</h1>');
 });
 
-app.use('/api/v1/blogs', blogRouter);
+app.use('/api/v1/events', eventRouter);
+
+app.use('/api/v1/admins', adminRouter);
+
+app.use('/api/v1/contacts', contactRouter);
+
+app.use('/api/v1/galleries', galleryRouter);
+
+// app.use('/api/v1/layouts', layoutRouter);
 // app.use('/api/v1/businesses', businessRouter);
 // app.use('/api/v1/products', productRouter);
-// app.use('/api/v1/admins', adminRouter);
-// app.use('/api/v1/layouts', layoutRouter);
-// app.use('/api/v1/contacts', contactRouter);
-// app.use('/api/v1/galleries', galleryRouter);
 
 app.all('*', (req, res, next) => {
     return next(
