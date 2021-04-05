@@ -1,9 +1,14 @@
 extends baseEmail
 
 block content
-    p Hi JLN Admin,
+    p Hi Agamsmoore,
         p This Is A Message From #{name} 🎉🙏
+        p Phone Number:  #{phone} 🎉🙏
+        p Email Address:  #{email} 🎉🙏
         p #{keyMessage}
+        p Desired Skill To Learn: #{service}
+        br 
+        p This Message Was Sent From #{category} Category
         table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
             tbody
                 tr
@@ -13,4 +18,4 @@ block content
                                 tr
                                     td
                                         a(href=`https://jln-builders.com`, target='_blank') Return To Site
-        p - JLN BUILDERS
+        p - Sample Catering Services

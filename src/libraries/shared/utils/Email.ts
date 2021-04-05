@@ -19,14 +19,20 @@ interface User {
 class Email {
     private to: string;
     private from: string;
+    private phone: string;
     private name: string;
     private keyMessage: string;
+    private category: string;
+    private service: string;
 
     constructor(public user: User) {
-        this.to = `JLN <${process.env.EMAIL}>`;
+        this.to = `Sample <${process.env.EMAIL}>`;
         this.from = user.email;
         this.name = user.name;
+        this.phone = user.phone;
+        this.service = user.service;
         this.keyMessage = user.keyMessage;
+        this.category = user.category;
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -48,6 +54,10 @@ class Email {
     async send(subject: string) {
         const html = pug.renderFile(`${__dirname}/../../views/contact.pug`, {
             name: this.name,
+            email: this.from,
+            phone: this.phone,
+            category: this.category,
+            service: this.category,
             keyMessage: this.keyMessage,
         });
 
