@@ -13,14 +13,29 @@ const { catchAsync, AppError } = ErroHandler;
 
 const { STATUS } = CONSTANTS;
 
+import { Session } from 'express-session';
+
+interface RequestWithCustomPrpos extends Request {
+    user?: { [unit: string]: any };
+}
+
+export type SessionWithCustomPrpos = Session & {
+    email?: string;
+    password?: string | number;
+    token?: number;
+    tokenExpires?: number;
+    passwordTimer?: number;
+};
+
+export type CustomRequest = RequestWithCustomPrpos &
+    SessionWithCustomPrpos & {
+        session?: SessionWithCustomPrpos;
+    };
+
 declare let _logger: Logger;
 
 interface UserServiceType {
     [unit: string]: any;
-}
-
-interface CustomRequest extends Request {
-    user: { [unit: string]: any };
 }
 
 // end requiring the modules
@@ -114,11 +129,9 @@ class Authentication {
     );
 
     logIn: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            const {
-                error,
-                value: { data: user = {} } = {},
-            } = await this.Service.logIn(req.body);
+        async (req: CustomRequest, res: Response, next: NextFunction) => {
+            const { error, value: { data: user = {} } = {} } =
+                await this.Service.logIn(req.body);
 
             if (error) {
                 return next(new AppError(error.msg, error.code));
@@ -143,11 +156,9 @@ class Authentication {
     );
 
     sendResetPasswordToken: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            const {
-                error,
-                value: { data: user = {} } = {},
-            } = await this.Service.resetPasswordToken(req.body);
+        async (req: CustomRequest, res: Response, next: NextFunction) => {
+            const { error, value: { data: user = {} } = {} } =
+                await this.Service.resetPasswordToken(req.body);
 
             if (error) {
                 return next(new AppError(error.msg, error.code));
@@ -182,13 +193,9 @@ class Authentication {
     );
 
     verifyResetPasswordToken: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            const {
-                token,
-                tokenExpires,
-            }: { [unit: string]: string | number } = req.session
-                ? req.session
-                : {};
+        async (req: CustomRequest, res: Response, next: NextFunction) => {
+            const { token, tokenExpires } = req.session;
+
             const { token: userToken } = req.body;
 
             const now = Date.now();
@@ -211,6 +218,7 @@ class Authentication {
             }
 
             req.session.passwordTimer = Date.now() + 6000000;
+
             delete req.session.tokenExpires;
 
             res.status(STATUS.OK).json({
@@ -221,18 +229,14 @@ class Authentication {
     );
 
     resetPassword: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            const {
-                email,
-                passwordTimer,
-            }: { [unit: string]: string | number } = req.session
-                ? req.session
-                : {};
+        async (req: CustomRequest, res: Response, next: NextFunction) => {
+            const { email, passwordTimer } = req.session;
+
             const { password, passwordConfirm } = req.body;
 
             const now = Date.now();
 
-            if (now > passwordTimer) {
+            if (now > passwordTimer!) {
                 return next(
                     new AppError(
                         'Expired Session. Password cannot be Updated. Try Again!',
@@ -263,10 +267,9 @@ class Authentication {
     );
 
     changePassword: RequestHandler = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            const { email }: { [unit: string]: string } = req.session
-                ? req.session
-                : {};
+        async (req: CustomRequest, res: Response, next: NextFunction) => {
+            const { email } = req.session;
+
             const { currentPassword, password, passwordConfirm } = req.body;
 
             const { error } = await this.Service.changePassword({

@@ -68,12 +68,11 @@ class AdminController {
             /**
              * @type {Object} - Holds the created data object.
              */
-            const {
-                error,
-                value: { data: admin = {} } = {},
-            }: { [unit: string]: any } = this.AdminService.create(adminDetails);
+            const { value: admin, error }: { [unit: string]: any } =
+                await this.AdminService.create(adminDetails);
 
             if (error) {
+                console.log(error);
                 return next(new AppError(error.msg, error.code));
             }
 
@@ -136,9 +135,8 @@ class AdminController {
             /**
              * @type {Object|null} - Holds either the returned data object or null.
              */
-            const {
-                value: { data: admins = {} } = {},
-            } = await this.AdminService.getAll(queryFields);
+            const { value: { data: admins = {} } = {} } =
+                await this.AdminService.getAll(queryFields);
 
             // Returns a json response
             res.status(STATUS.OK).json({

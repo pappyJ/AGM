@@ -17,9 +17,9 @@ export const rateLimiter = (max: number) =>
     });
 
 export const selectProps = <T, U extends keyof T>(obj: T, props: U[]) => {
-    const newObj: any = {};
+    let newObj: any;
 
-    props.forEach((el: U) => {
+    props.forEach((el) => {
         if (obj[el]) newObj[el] = obj[el];
     });
 
@@ -55,28 +55,31 @@ export const corsOptions = {
 
 export const sessionParams = (expressSession: any) => {
     const MongoStore = mongoConnect(expressSession);
+
     const mongoStoreInstance = new MongoStore({
         mongooseConnection: mongoose.connection,
         secret: session.STORE_SECRET,
-        ttl: +session.STORE_TTL,
+        ttl: session.STORE_TTL ? +session.STORE_TTL : undefined,
     });
 
     const environment = ENV.NODE_ENV === ENV.PROD;
 
     return {
-        secret: session.SECRET,
+        secret: session.SECRET!,
         name: session.NAME,
         cookie: {
             httpOnly: true,
             secure: environment,
             // sameSite: environment ? 'none' : 'lax',
-            maxAge: +session.COOKIE_MAX_AGE * 60 * 24, // Time in milliseconds
+            maxAge: session.COOKIE_MAX_AGE
+                ? +session.COOKIE_MAX_AGE * 60 * 24
+                : Date.now() * 60 * 24, // Time in milliseconds
         },
         saveUninitialized: false,
 
         resave: false,
         proxy: true,
         store: mongoStoreInstance,
-        // unset: "destroy",
+        unset: 'destroy' as 'destroy',
     };
 };

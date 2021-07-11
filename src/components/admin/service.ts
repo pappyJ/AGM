@@ -50,13 +50,20 @@ class AdminService extends ApiFeatures {
 
         const admin = await this.AdminModel.create({ ...details });
 
+        if (!admin) {
+            return {
+                error: {
+                    msg: 'Error Creating Admin',
+                    code: STATUS.BAD_REQUEST,
+                },
+            };
+        }
+
         // emits an Event
         this.eventEmitter.emitEvent('New Admin', admin);
 
         return {
-            value: {
-                data: admin,
-            },
+            value: admin,
         };
     }
 

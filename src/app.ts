@@ -75,7 +75,7 @@ app.options('*', corsSetup);
 
 const SESSION_CREDENTIALS = sessionParams(expressSession);
 
-app.use(expressSession({ ...SESSION_CREDENTIALS, unset: 'destroy' }));
+app.use(expressSession({ ...SESSION_CREDENTIALS }));
 
 // PASSPORT INIT
 

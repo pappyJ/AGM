@@ -1,4 +1,6 @@
+import { Error } from 'mongoose';
 import logger from './logger';
+// import * as Reflect from 'reflect-metadata';
 
 const base_dir = __dirname;
 
@@ -20,7 +22,8 @@ const _include = function (file: string) {
     try {
         return require(abs_path(main + file));
     } catch (err) {
-        _logger.error(err.stack);
+        const error = err as Error;
+        if (error.stack) _logger.error(error.stack);
     }
 };
 
@@ -36,3 +39,9 @@ Object.defineProperty(global, '_logger', {
     writable: false,
     configurable: false,
 });
+
+// Object.defineProperty(global, 'Reflect', {
+//     value: Reflect,
+//     writable: true,
+//     configurable: true,
+// });
