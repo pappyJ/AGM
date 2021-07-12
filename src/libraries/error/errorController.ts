@@ -1,6 +1,13 @@
 import AppError from './appError';
 import { NextFunction, Request, Response } from 'express';
+import { CastError, Error } from 'mongoose';
 import CONSTANTS from '../shared/constants';
+
+type GeneralError = AppError & CastError & Error;
+
+type CustomErrorFunc = (error?: GeneralError) => typeof AppError;
+
+type CustomErrorHandler = { [unit: string]: GeneralError } | CustomErrorFunc;
 
 const {
     MSG,
@@ -10,13 +17,13 @@ const {
 } = CONSTANTS;
 
 // CAST ERROR (INVALID VALUE)
-const handleCastErrorDB = (err: { [x: string]: any }) => {
+const handleCastErrorDB = (err: CastError) => {
     const message = `Invalid ${err.path} - ${err.value}`;
     return new AppError(message, STATUS.BAD_REQUEST);
 };
 
 // DUPLICATE ERROR (MORE THAN ONE VALUE)
-const handleDuplicateErrorDB = (err: { [x: string]: any }) => {
+const handleDuplicateErrorDB = (err: { [unit: string]: any }) => {
     const errorKeys = Object.keys(err.keyValue);
     const message = `Duplicate field value: ${
         err.keyValue[errorKeys[0]]
@@ -26,7 +33,7 @@ const handleDuplicateErrorDB = (err: { [x: string]: any }) => {
 };
 
 // VALIDATION ERROR (VALUE DOESN'T MATCH EXPECTED VALUE)
-const handleValidationErrorDB = (err: { [x: string]: object }) => {
+const handleValidationErrorDB = (err: Error.ValidationError) => {
     const errors = Object.values(err.errors).map((el) => el.message);
 
     const message = `Invalid Input Data: ${errors
@@ -50,7 +57,7 @@ const handleTokenExpiredError = () =>
 // Error Controllers
 
 // DEVELOPMENT ENVIRONMENT ERROR HANDLER
-const sendErrDev = (err: { [x: string]: any }, req: Request, res: Response) => {
+const sendErrDev = (err: AppError, req: Request, res: Response) => {
     if (req.originalUrl.startsWith('/api')) {
         return res.status(err.statusCode).json({
             status: err.status,
@@ -67,11 +74,7 @@ const sendErrDev = (err: { [x: string]: any }, req: Request, res: Response) => {
 };
 
 // PRODUCTION ENVIRONMENT ERROR HANDLER
-const sendErrProd = (
-    err: { [x: string]: any },
-    req: Request,
-    res: Response
-) => {
+const sendErrProd = (err: AppError, req: Request, res: Response) => {
     if (req.originalUrl.startsWith('/api')) {
         if (err.isOperational) {
             return res.status(err.statusCode).json({
@@ -95,9 +98,9 @@ const sendErrProd = (
 };
 
 const errorController = (
-    err: { [x: string]: any },
-    req: any,
-    res: any,
+    err: GeneralError,
+    req: Request,
+    res: Response,
     next: NextFunction
 ) => {
     err.statusCode = err.statusCode || STATUS.INTERNAL_SERVER_ERROR;
@@ -107,7 +110,7 @@ const errorController = (
         // send error response
         sendErrDev(err, req, res);
     } else if (process.env.NODE_ENV === PRODUCTION) {
-        let error = { ...err };
+        let error: CustomErrorHandler | any = { ...err };
         // eslint-disable-next-line no-proto
         // error.__proto__ = err;
 
