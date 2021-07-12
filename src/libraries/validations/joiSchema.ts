@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 declare const _include: Function;
 
@@ -26,7 +26,7 @@ const validate = {
     ...contact,
 };
 
-export const reqValidate = (endpoint: string): Function => {
+export const reqValidate = (endpoint: string): RequestHandler => {
     return (req: Request, _: Response, next: NextFunction) => {
         let request = {};
 
@@ -39,8 +39,17 @@ export const reqValidate = (endpoint: string): Function => {
             body: req.body,
         };
 
+        enum REQUEST_METHODS {
+            GET,
+            POST,
+            PATCH,
+            DELETE,
+        }
+
+        type k = keyof typeof REQUEST_METHODS;
+
         const request_methods: {
-            [unit: string]: { [unit: string]: object };
+            [REQUEST_METHODS in k]: typeof data;
         } = {
             GET: { ...data },
             POST: { ...data },
@@ -48,7 +57,7 @@ export const reqValidate = (endpoint: string): Function => {
             DELETE: { ...data },
         };
 
-        const requestData = request_methods[req.method];
+        const requestData = request_methods[req.method as k];
 
         const schema = Joi.object({
             ...validate[endpoint].params,
