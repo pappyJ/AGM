@@ -27,7 +27,7 @@ const validate = {
 };
 
 export const reqValidate = (endpoint: string): Function => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: Request, _: Response, next: NextFunction) => {
         let request = {};
 
         if (!validate[endpoint]) {

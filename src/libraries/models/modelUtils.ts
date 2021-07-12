@@ -1,10 +1,10 @@
 import crypto from 'crypto';
+import { Document, SchemaTimestampsConfig } from 'mongoose';
 
-const removeProps = (props: any[]) => {
-    return (
-        doc: any,
-        ret: { [x: string]: any; id: any; createdAt: any; __v: any }
-    ) => {
+interface DocumentWithTimestamp extends Document, SchemaTimestampsConfig {}
+
+const removeProps = (props: [keyof DocumentWithTimestamp]) => {
+    return (_: Document, ret: DocumentWithTimestamp) => {
         if (Array.isArray(props)) {
             props.forEach((prop) => delete ret[prop]);
         }
@@ -17,7 +17,7 @@ const removeProps = (props: any[]) => {
     };
 };
 
-export const customProps = (props: any) => {
+export const customProps = (props: [keyof DocumentWithTimestamp]) => {
     return {
         virtuals: true,
         versionKey: false,
@@ -28,24 +28,23 @@ export const customProps = (props: any) => {
 export const arrayLimit = (
     minLimit: number,
     maxLimit: number,
-    val: string | any[]
+    val: typeof Array
 ) => {
     return val.length > minLimit && val.length < maxLimit;
 };
 
-export const toLowerCaseObject = (value: { [s: string]: any }) => {
+export const toLowerCaseObject = (value: object | typeof Array) => {
     if (!Array.isArray(value) && typeof value !== 'object') {
         return undefined;
     }
 
     if (!Array.isArray(value) && typeof value === 'object') {
         value = Object.values(value);
-        console.log('isObject', value);
     }
 
-    console.log(value, typeof value);
+    if (Array.isArray(value))
+        value = value.map((val: string) => val.toLowerCase());
 
-    value = value.map((val: string) => val.toLowerCase());
     return value;
 };
 
