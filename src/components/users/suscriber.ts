@@ -3,10 +3,11 @@
  * @description subScribes for user Feature
  */
 import { Logger } from 'winston';
+import compEmitter from '../../libraries/suscribers';
 
 declare let _logger: Logger;
 
-const userEvents = (eventEmitter: any) => {
+const userEvents = (eventEmitter: typeof compEmitter) => {
     eventEmitter.on('New User', (user: object) => {
         _logger.info(`✅✅✅ ➡ New User has been created!\nUser = ${user}`);
     });

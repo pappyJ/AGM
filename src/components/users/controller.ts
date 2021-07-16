@@ -3,7 +3,7 @@
 // USER MODULES
 import UserService from './service';
 
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Response, NextFunction, RequestHandler, Request } from 'express';
 
 import ErroHandler from '../../libraries/error';
 
@@ -28,10 +28,6 @@ const userServiceInstance = new UserService();
  * @class
  */
 
-interface UserServiceType {
-    [unit: string]: any;
-}
-
 interface CustomRequest extends Request {
     user: { [unit: string]: any };
 }
@@ -43,14 +39,12 @@ class UserController extends Authentication {
      *
      */
 
-    public UserService: UserServiceType;
-    constructor(public userService = userServiceInstance) {
-        super(userService);
+    constructor(public UserService = userServiceInstance) {
+        super(UserService);
         /**
          * @type {Object}
          * @borrows userService
          */
-        this.UserService = userService;
     }
 
     /**
@@ -69,9 +63,8 @@ class UserController extends Authentication {
             /**
              * @type {Object} - Holds the created data object.
              */
-            const {
-                value: { data: user = {} } = {},
-            } = await this.UserService.create(userDetails);
+            const { value: { data: user = {} } = {} } =
+                await this.UserService.create(userDetails);
 
             // if (req.params.signup) {
             //   return next();
@@ -107,10 +100,8 @@ class UserController extends Authentication {
              * @describtion Use Either a mongodbUniqueId Or Slug to Search
              */
 
-            const {
-                error,
-                value: { data: user = {} } = {},
-            } = await this.UserService.get({ slug: queryFields.slug });
+            const { error, value: { data: user = {} } = {} } =
+                await this.UserService.get({ slug: queryFields.slug });
 
             // Checks if data returned is null
             if (error) {
@@ -138,14 +129,13 @@ class UserController extends Authentication {
              *
              * @empty - Returns Whole Data In Users Collection
              */
-            const queryFields = { ...req.query };
+            const queryFields: any = { ...req.query };
 
             /**
              * @type {Object|null} - Holds either the returned data object or null.
              */
-            const {
-                value: { data: users = {} } = {},
-            } = await this.UserService.getAll(queryFields);
+            const { value: { data: users = {} } = {} } =
+                await this.UserService.getAll(queryFields);
 
             // Returns a json response
             res.status(STATUS.OK).json({
@@ -197,32 +187,17 @@ class UserController extends Authentication {
              * @describtion Use Either a mongodbUniqueId Or Slug to Search
              */
 
-            // const { error, value: { data: user = {}} = {} } = await this.UserService.update(queryParams, queryFields);
-
-            // if (error) {
-            //   return next(new AppError(error.msg, error.code));
-            // }
-
-            // Returns a json response
-            res.status(STATUS.ACCEPTED).json({
-                message: MSG.SUCCESS,
-                // user,
-            });
-        }
-    );
-
-    activeUser = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            const { error } = await this.UserService.active(req.params);
+            const { error, value: { data: user = {} } = {} } =
+                await this.UserService.update(queryParams, queryFields);
 
             if (error) {
                 return next(new AppError(error.msg, error.code));
             }
 
-            res.status(STATUS.OK).json({
-                status: MSG.SUCCESS,
-                message: 'User is Active!',
-                active: true,
+            // Returns a json response
+            res.status(STATUS.ACCEPTED).json({
+                message: MSG.SUCCESS,
+                user,
             });
         }
     );

@@ -14,13 +14,19 @@ import HELPERS from '../../libraries/shared/helpers';
 
 const { states } = HELPERS;
 
-interface UserDocument extends Document {
+export interface UserDocument extends Document {
     firstName: string;
     lastName: string;
     password: string;
+    email: string;
     userNo: number;
+    verified: Boolean;
     slug: string;
     passwordConfirm: string | undefined;
+
+    findByEmail: (email: string) => UserDocument;
+
+    validPassword: (password: string) => Boolean;
 }
 
 const userSchema: Schema<UserDocument> = new Schema(

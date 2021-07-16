@@ -20,7 +20,7 @@ const {
 
 import VALIDATION from '../../libraries/validations';
 
-const { reqValidate }: { reqValidate: (validator: string) => any } = VALIDATION;
+const { reqValidate } = VALIDATION;
 
 // const userCntrl = new UserController();
 

@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 
 class CompEmitter extends EventEmitter {
-    emitEvent(event: string, data: string) {
+    emitEvent(event: string, data: object) {
         this.emit(event, data);
     }
 }

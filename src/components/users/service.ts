@@ -1,7 +1,9 @@
 // NODE MODULES
-
+import { Model } from 'mongoose';
+import { Request } from 'express';
+import { UserDocument } from './Model';
 // USER MODULES
-import UserModel from './Model';
+import UsersModel from './Model';
 import ApiFeatures from '../../libraries/shared/utils/ApiFeatures';
 import compEmitter from '../../libraries/suscribers';
 import CONSTANTS from '../../libraries/shared/constants';
@@ -14,6 +16,11 @@ interface DataTemplate {
     [unit: string]: string;
 }
 
+interface CustomRequest extends Request {
+    [unit: string]: any;
+}
+
+type CustomModel = Model<UserDocument> & UserDocument;
 class UserService extends ApiFeatures {
     /**
      * Creates user controller
@@ -22,12 +29,11 @@ class UserService extends ApiFeatures {
      *
      */
 
-    UserModel: any;
-    eventEmitter: any;
-
-    constructor(userModel = UserModel, eventEmitter = compEmitter) {
+    constructor(
+        protected UserModel = UsersModel as CustomModel,
+        protected eventEmitter: typeof compEmitter = compEmitter
+    ) {
         super();
-        this.UserModel = userModel;
         this.eventEmitter = eventEmitter;
     }
 
@@ -39,11 +45,13 @@ class UserService extends ApiFeatures {
      * @throws Mongoose Error
      */
 
-    async create(details: object) {
+    async create(details: Request) {
         /**
          * @type {Object} - Holds the created data object.
          */
-        const user = await this.UserModel.create({ ...details });
+        const user = await this.UserModel.create({
+            ...details,
+        });
 
         // emits an Event
         this.eventEmitter.emitEvent('New User', user);
@@ -95,7 +103,7 @@ class UserService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async getAll(query: any) {
+    async getAll(query: Request) {
         const usersQuery = this.api(this.UserModel, query)
             .filter()
             .sort()
@@ -121,7 +129,7 @@ class UserService extends ApiFeatures {
     async delete(query: object) {
         const user = await this.UserModel.findOneAndDelete({ ...query });
 
-        this.eventEmitter.emitEvent('Deleted User', user);
+        this.eventEmitter.emitEvent('Deleted User', user!);
 
         return {
             value: {
@@ -137,7 +145,7 @@ class UserService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async update(query: object, details: object) {
+    async update(query: object, details: Request) {
         const user = await this.UserModel.findOneAndUpdate(
             query,
             { ...details },
@@ -214,8 +222,7 @@ class UserService extends ApiFeatures {
         if (!user.verified) {
             return {
                 error: {
-                    msg:
-                        'Your Email Address Is Not Verified. Please Go To Your Email To Verify Your Account!',
+                    msg: 'Your Email Address Is Not Verified. Please Go To Your Email To Verify Your Account!',
                     code: STATUS.UNAUTHORIZED,
                 },
             };

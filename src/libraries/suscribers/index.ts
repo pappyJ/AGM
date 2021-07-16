@@ -9,7 +9,7 @@ import eventEvents from '../../components/event/suscriber';
 
 const compose =
     (fn1: Function, ...fns: Function[]) =>
-    (emitter: any) =>
+    (emitter: typeof compEmitter) =>
         fn1(
             fns.reduce(
                 (returnedData, currentFn) => currentFn(returnedData),

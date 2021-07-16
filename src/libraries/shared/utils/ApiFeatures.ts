@@ -1,8 +1,8 @@
-import { Model, Document } from 'mongoose';
+import { Model } from 'mongoose';
 
 import { Request } from 'express';
 
-interface CustomModel extends Model<Document<any>> {
+interface CustomModel extends Model<any> {
     findByEmail: (email: string) => any;
 }
 
