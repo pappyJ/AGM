@@ -1,12 +1,25 @@
 // importing the modules
 
-const { Schema, model: Model } = require('mongoose');
+import { Schema, model, Document } from 'mongoose';
 
-const slugify = require('slugify');
+import ShortUniqueId from 'short-unique-id';
 
-const { AppError } = _include('libraries/error');
+import slugify from 'slugify';
 
-const productSchema = new Schema(
+export interface ProductDocument extends Document {
+    name: string;
+    description: string;
+    image: string;
+    business: string;
+    branches: string[];
+    creator: string;
+    slug: string;
+    date: Date;
+
+    totalProductsCount: () => Promise<number>;
+}
+
+const productSchema: Schema<ProductDocument> = new Schema(
     {
         name: {
             type: String,
@@ -92,27 +105,18 @@ productSchema.index(
 
 // PRODUCT HOOKS
 productSchema.pre('save', async function () {
-    const business = await Model('Business').findById(this.business).lean();
-
-    if (!business) {
-        throw new AppError('Business Does Not Exist!', 400);
-    }
-
-    this.slug = slugify(`${business.name} ${this.name}`, { lower: true });
+    const id = new ShortUniqueId();
+    this.slug = slugify(`${this.name} ${id()}`, { lower: true });
 });
 
 // PRODUCT STATICS
-productSchema.statics.findBySlug = async function (slug) {
+productSchema.statics.findBySlug = async function (slug: string) {
     return await this.findOne({ slug });
-};
-
-productSchema.statics.findByBusiness = async function (business) {
-    return await this.find({ business });
 };
 
 productSchema.statics.totalProductsCount = async function () {
     return await this.find().estimatedDocumentCount();
 };
-const Product = Model('Product', productSchema);
+const Product = model('Product', productSchema);
 
-module.exports = Product;
+export default Product;

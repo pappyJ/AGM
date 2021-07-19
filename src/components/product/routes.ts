@@ -1,16 +1,18 @@
 // importing the modules
-// const passport = require('passport');
-// importing the modules
 
-const express = require('express');
+import { Router } from 'express';
 
-const productCntrl = require('./controller');
+import productCntrl from './controller';
 
-const { reqValidate } = _include('libraries/validations');
+import AdminService from '../admin';
 
-const { Controller: adminAuth } = _include('components/admin');
+import VALIDATION from '../../libraries/validations';
 
-const router = express.Router();
+const { reqValidate } = VALIDATION;
+
+const { Controller: adminAuth } = AdminService;
+
+const router = Router();
 
 router.get('/', productCntrl.getAllProducts);
 
@@ -31,4 +33,4 @@ router
 
     .delete(reqValidate('deleteProduct'), productCntrl.deleteProduct);
 
-module.exports = router;
+export default router;

@@ -1,8 +1,6 @@
-const Joi = require('joi');
+import { string, array } from 'joi';
 
-const { AppError } = _include('libraries/error');
-
-const defaultStringValidate = Joi.string().lowercase().trim();
+const defaultStringValidate = string().lowercase().trim();
 /**
  * @description Joi Schema Validation For Product Feature
  */
@@ -18,7 +16,7 @@ module.exports = {
 
             business: defaultStringValidate.required(),
 
-            branches: Joi.array(),
+            branches: array(),
 
             image: defaultStringValidate.required(),
         },
@@ -56,7 +54,7 @@ module.exports = {
 
             operation: defaultStringValidate,
 
-            branches: Joi.array(),
+            branches: array(),
         },
     },
 };

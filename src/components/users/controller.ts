@@ -3,6 +3,8 @@
 // USER MODULES
 import UserService from './service';
 
+import { CustomRequest } from '../../libraries/interfaces/user';
+
 import { Response, NextFunction, RequestHandler, Request } from 'express';
 
 import ErroHandler from '../../libraries/error';
@@ -27,10 +29,6 @@ const userServiceInstance = new UserService();
  * User Controller class
  * @class
  */
-
-interface CustomRequest extends Request {
-    user: { [unit: string]: any };
-}
 
 class UserController extends Authentication {
     /**
@@ -122,28 +120,26 @@ class UserController extends Authentication {
      * @route {GET} /users/
      * @access public
      */
-    getAllUsers = catchAsync(
-        async (req: Request, res: Response, next: NextFunction) => {
-            /**
-             * @type {Object} - An Object of fields to be queried.
-             *
-             * @empty - Returns Whole Data In Users Collection
-             */
-            const queryFields: any = { ...req.query };
+    getAllUsers = catchAsync(async (req: Request, res: Response) => {
+        /**
+         * @type {Object} - An Object of fields to be queried.
+         *
+         * @empty - Returns Whole Data In Users Collection
+         */
+        const queryFields: any = { ...req.query };
 
-            /**
-             * @type {Object|null} - Holds either the returned data object or null.
-             */
-            const { value: { data: users = {} } = {} } =
-                await this.UserService.getAll(queryFields);
+        /**
+         * @type {Object|null} - Holds either the returned data object or null.
+         */
+        const { value: { data: users = {} } = {} } =
+            await this.UserService.getAll(queryFields);
 
-            // Returns a json response
-            res.status(STATUS.OK).json({
-                message: MSG.SUCCESS,
-                users,
-            });
-        }
-    );
+        // Returns a json response
+        res.status(STATUS.OK).json({
+            message: MSG.SUCCESS,
+            users,
+        });
+    });
 
     deleteUser = catchAsync(
         async (req: Request, res: Response, next: NextFunction) => {

@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import { string, boolean } from 'joi';
 
-const defaultStringValidate = Joi.string().lowercase().trim();
+const defaultStringValidate = string().lowercase().trim();
 /**
  * @description Joi Schema Validation For Gallery Feature
  */
@@ -50,7 +50,7 @@ module.exports = {
 
             image: defaultStringValidate.required(),
 
-            active: Joi.boolean(),
+            active: boolean(),
         },
     },
 };

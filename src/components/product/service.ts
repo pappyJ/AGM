@@ -1,12 +1,22 @@
 // NODE MODULES
+import { Model } from 'mongoose';
+import { Request } from 'express';
 
 // PRODUCT MODULES
-const ProductModel = require('./Model');
-const { ApiFeatures } = _include('libraries/shared/utils');
-const compEmitter = _include('libraries/suscribers');
-const { STATUS, MSG } = _include('libraries/shared/constants');
+
+import Product, { ProductDocument } from './Model';
+
+import UTILS from '../../libraries/shared/utils';
+
+import compEmitter from '../../libraries/suscribers';
+import CONSTANTS from '../../libraries/shared/constants';
+
+const { STATUS } = CONSTANTS;
+const { ApiFeatures } = UTILS;
 
 // end requiring the modules
+
+type CustomModel = Model<ProductDocument> & ProductDocument;
 
 class ProductService extends ApiFeatures {
     /**
@@ -16,10 +26,11 @@ class ProductService extends ApiFeatures {
      *
      */
 
-    constructor(productModel = ProductModel, eventEmitter = compEmitter) {
+    constructor(
+        protected ProductModel = Product as CustomModel,
+        protected eventEmitter: typeof compEmitter = compEmitter
+    ) {
         super();
-        this.ProductModel = productModel;
-        this.eventEmitter = eventEmitter;
     }
 
     /**
@@ -30,7 +41,7 @@ class ProductService extends ApiFeatures {
      * @throws Mongoose Error
      */
 
-    async create(details) {
+    async create(details: Request) {
         /**
          * @type {Object} - Holds the created data object.
          */
@@ -53,7 +64,7 @@ class ProductService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async get(query, populateOptions = undefined) {
+    async get(query: object, populateOptions = undefined) {
         let productQuery = this.ProductModel.findOne({ ...query });
 
         // TODO: Populate populateOptions
@@ -86,7 +97,7 @@ class ProductService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async getAll(query) {
+    async getAll(query: Request) {
         let productsQuery = this.api(this.ProductModel, query)
             .filter()
             .sort()
@@ -98,7 +109,8 @@ class ProductService extends ApiFeatures {
 
         const products = await productsQuery.query.lean();
 
-        const totalProductsLength = await this.ProductModel.totalProductsCount();
+        const totalProductsLength =
+            await this.ProductModel.totalProductsCount();
 
         return {
             value: {
@@ -119,10 +131,10 @@ class ProductService extends ApiFeatures {
      * @returns {} Returns null
      * @throws Mongoose Error
      */
-    async delete(query) {
+    async delete(query: Request) {
         const product = await this.ProductModel.findOneAndDelete({ ...query });
 
-        this.eventEmitter.emitEvent('Deleted Product', product);
+        this.eventEmitter.emitEvent('Deleted Product', product!);
 
         return {
             value: {
@@ -138,16 +150,7 @@ class ProductService extends ApiFeatures {
      * @returns {Object} Returns the found requested data
      * @throws Mongoose Error
      */
-    async update(query, details) {
-        if (details.operation === 'inc') {
-            details.$push = { branches: details.branches };
-            delete details.branches;
-        }
-
-        if (details.operation === 'dec') {
-            details.$pullAll = { branches: details.branches };
-            delete details.branches;
-        }
+    async update(query: Request, details: Request) {
         const product = await this.ProductModel.findOneAndUpdate(
             query,
             { ...details },
@@ -176,4 +179,4 @@ class ProductService extends ApiFeatures {
     }
 }
 
-module.exports = ProductService;
+export default ProductService;

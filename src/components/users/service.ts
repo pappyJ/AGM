@@ -1,9 +1,9 @@
 // NODE MODULES
 import { Model } from 'mongoose';
 import { Request } from 'express';
-import { UserDocument } from './Model';
+
 // USER MODULES
-import UsersModel from './Model';
+import UsersModel, { UserDocument } from './Model';
 import ApiFeatures from '../../libraries/shared/utils/ApiFeatures';
 import compEmitter from '../../libraries/suscribers';
 import CONSTANTS from '../../libraries/shared/constants';
@@ -14,10 +14,6 @@ const { STATUS } = CONSTANTS;
 
 interface DataTemplate {
     [unit: string]: string;
-}
-
-interface CustomRequest extends Request {
-    [unit: string]: any;
 }
 
 type CustomModel = Model<UserDocument> & UserDocument;
@@ -34,7 +30,6 @@ class UserService extends ApiFeatures {
         protected eventEmitter: typeof compEmitter = compEmitter
     ) {
         super();
-        this.eventEmitter = eventEmitter;
     }
 
     /**

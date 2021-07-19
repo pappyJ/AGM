@@ -2,15 +2,11 @@ import { Model } from 'mongoose';
 
 import { Request } from 'express';
 
-interface CustomModel extends Model<any> {
-    findByEmail: (email: string) => any;
-}
-
 class ApiFeatures {
     query: any;
     queryString: any;
 
-    api(Model: CustomModel, queryString: Request) {
+    api(Model: Model<any>, queryString: Request) {
         this.query = Model.find();
         this.queryString = queryString;
 

@@ -23,9 +23,10 @@ import Admin from './components/admin';
 
 import Contact from './components/contact';
 
+import Product from './components/product';
+
 //routers
 
-// const { Router: productRouter } = _include('components/product');
 // const { Router: layoutRouter } = _include('components/layout');
 
 const { Router: eventRouter } = Event;
@@ -35,6 +36,8 @@ const { Router: galleryRouter } = Gallery;
 const { Router: adminRouter } = Admin;
 
 const { Router: contactRouter } = Contact;
+
+const { Router: productRouter } = Product;
 
 //helpers
 
@@ -147,9 +150,10 @@ app.use('/api/v1/contacts', contactRouter);
 
 app.use('/api/v1/galleries', galleryRouter);
 
+app.use('/api/v1/products', productRouter);
+
 // app.use('/api/v1/layouts', layoutRouter);
 // app.use('/api/v1/businesses', businessRouter);
-// app.use('/api/v1/products', productRouter);
 
 app.all('*', (req, res, next) => {
     return next(
