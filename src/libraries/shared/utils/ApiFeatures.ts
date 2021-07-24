@@ -3,8 +3,8 @@ import { Model } from 'mongoose';
 import { Request } from 'express';
 
 class ApiFeatures {
-    query: any;
-    queryString: any;
+    protected query: any;
+    protected queryString: any;
 
     api(Model: Model<any>, queryString: Request) {
         this.query = Model.find();
